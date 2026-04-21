@@ -1,0 +1,702 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Plans and Pricing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ---------- Tokens ---------- */
+    :root {
+      --bg: #0a0a0f;
+      --bg-2: #0d0d12;
+      --card: #111115;
+      --card-2: #141419;
+      --border: rgba(255, 255, 255, 0.06);
+      --border-strong: rgba(255, 255, 255, 0.1);
+      --text: #ededf0;
+      --text-dim: #a1a1aa;
+      --text-mute: #6b6b75;
+
+      --free: #3b82f6;       /* blue */
+      --pro: #22c55e;        /* green */
+      --advance: #10b981;    /* emerald / darker green */
+
+      --radius-lg: 16px;
+      --radius-md: 10px;
+      --radius-sm: 6px;
+
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* ---------- Reset ---------- */
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      font-feature-settings: "cv11", "ss01", "ss03";
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.5;
+      letter-spacing: -0.005em;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Ambient background glows */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(600px 400px at 15% -10%, rgba(59, 130, 246, 0.08), transparent 60%),
+        radial-gradient(700px 500px at 85% 10%, rgba(34, 197, 94, 0.06), transparent 60%),
+        radial-gradient(500px 400px at 50% 100%, rgba(16, 185, 129, 0.05), transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    button { font: inherit; color: inherit; cursor: pointer; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ---------- Layout ---------- */
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 88px 32px 96px;
+    }
+
+    /* ---------- Header ---------- */
+    .header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border: 1px solid var(--border-strong);
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 24px;
+    }
+    .badge::before {
+      content: "";
+      width: 6px; height: 6px;
+      border-radius: 999px;
+      background: var(--pro);
+      box-shadow: 0 0 10px var(--pro);
+    }
+
+    h1 {
+      font-size: clamp(40px, 6vw, 64px);
+      font-weight: 600;
+      letter-spacing: -0.035em;
+      line-height: 1.05;
+      margin: 0 0 18px;
+      background: linear-gradient(180deg, #ffffff 0%, #b8b8c0 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      color: var(--text-dim);
+      font-size: 17px;
+      max-width: 560px;
+      margin: 0 auto 40px;
+      line-height: 1.55;
+    }
+
+    /* ---------- Billing toggle ---------- */
+    .toggle {
+      display: inline-flex;
+      padding: 4px;
+      background: var(--card);
+      border: 1px solid var(--border-strong);
+      border-radius: 999px;
+      position: relative;
+      gap: 2px;
+    }
+    .toggle button {
+      position: relative;
+      z-index: 1;
+      padding: 9px 20px;
+      border: none;
+      background: transparent;
+      color: var(--text-mute);
+      font-size: 13.5px;
+      font-weight: 500;
+      border-radius: 999px;
+      transition: color 0.3s var(--ease);
+    }
+    .toggle button.active { color: #0a0a0f; }
+    .toggle .pill {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      height: calc(100% - 8px);
+      width: calc(50% - 4px);
+      background: #ededf0;
+      border-radius: 999px;
+      transition: transform 0.35s var(--ease);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    }
+    .toggle[data-billing="annual"] .pill {
+      transform: translateX(100%);
+    }
+    .save-tag {
+      margin-left: 6px;
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+    }
+
+    /* ---------- Grid ---------- */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 72px;
+      align-items: stretch;
+    }
+
+    /* ---------- Card ---------- */
+    .card {
+      position: relative;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px 28px 28px;
+      display: flex;
+      flex-direction: column;
+      transition:
+        transform 0.5s var(--ease),
+        border-color 0.4s var(--ease),
+        box-shadow 0.5s var(--ease);
+      isolation: isolate;
+      overflow: hidden;
+    }
+
+    /* subtle top accent line */
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent) 50%, transparent);
+      opacity: 0.7;
+      transition: opacity 0.4s var(--ease);
+    }
+
+    /* top glow halo */
+    .card::after {
+      content: "";
+      position: absolute;
+      top: -120px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 280px;
+      height: 180px;
+      background: radial-gradient(ellipse at center, var(--accent-glow), transparent 65%);
+      opacity: 0.35;
+      pointer-events: none;
+      transition: opacity 0.5s var(--ease);
+      z-index: -1;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent-border);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.04) inset,
+        0 24px 48px -24px rgba(0, 0, 0, 0.6);
+    }
+    .card:hover::before { opacity: 1; }
+    .card:hover::after { opacity: 0.6; }
+
+    /* Per-tier accent colors */
+    .card--free {
+      --accent: var(--free);
+      --accent-glow: rgba(59, 130, 246, 0.35);
+      --accent-border: rgba(59, 130, 246, 0.3);
+    }
+    .card--pro {
+      --accent: var(--pro);
+      --accent-glow: rgba(34, 197, 94, 0.45);
+      --accent-border: rgba(34, 197, 94, 0.38);
+    }
+    .card--advance {
+      --accent: var(--advance);
+      --accent-glow: rgba(16, 185, 129, 0.32);
+      --accent-border: rgba(16, 185, 129, 0.28);
+    }
+
+    /* Pro elevated */
+    .card--pro {
+      background: linear-gradient(180deg, #14181a 0%, #111115 40%);
+      border-color: rgba(34, 197, 94, 0.18);
+    }
+    .card--pro::before { opacity: 1; }
+    .card--pro::after { opacity: 0.55; }
+
+    /* Card top row: icon + popular badge */
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+
+    .tier-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: var(--accent);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.08) inset,
+        0 8px 20px -6px var(--accent-glow);
+    }
+    .tier-icon svg {
+      width: 16px;
+      height: 16px;
+      color: #0a0a0f;
+    }
+
+    .popular {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10.5px;
+      letter-spacing: 0.14em;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--pro);
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.22);
+    }
+    .popular::before {
+      content: "";
+      width: 5px; height: 5px;
+      border-radius: 999px;
+      background: var(--pro);
+      box-shadow: 0 0 8px var(--pro);
+    }
+
+    /* Plan identity */
+    .plan-name {
+      font-size: 14.5px;
+      font-weight: 500;
+      color: var(--text-dim);
+      margin: 0 0 10px;
+      letter-spacing: -0.005em;
+    }
+
+    .price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-bottom: 14px;
+      min-height: 52px;
+    }
+    .price {
+      font-size: 44px;
+      font-weight: 600;
+      letter-spacing: -0.035em;
+      color: var(--text);
+      line-height: 1;
+    }
+    .price-custom {
+      font-size: 34px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      line-height: 1;
+    }
+    .price-period {
+      color: var(--text-mute);
+      font-size: 14px;
+      font-weight: 400;
+    }
+
+    .description {
+      color: var(--text-dim);
+      font-size: 14px;
+      line-height: 1.55;
+      margin: 0 0 28px;
+      min-height: 44px;
+    }
+
+    /* CTA button */
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: -0.003em;
+      border: 1px solid var(--border-strong);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text);
+      transition:
+        background 0.25s var(--ease),
+        border-color 0.25s var(--ease),
+        transform 0.2s var(--ease);
+    }
+    .cta:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+    .cta:active { transform: translateY(1px); }
+
+    .cta--primary {
+      background: #ededf0;
+      color: #0a0a0f;
+      border-color: #ededf0;
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.6) inset,
+        0 10px 24px -10px rgba(34, 197, 94, 0.45);
+    }
+    .cta--primary:hover {
+      background: #ffffff;
+      border-color: #ffffff;
+    }
+
+    .cta svg {
+      width: 14px; height: 14px;
+      transition: transform 0.25s var(--ease);
+    }
+    .cta:hover svg { transform: translateX(2px); }
+
+    /* Divider */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 32px 0 22px;
+    }
+    .divider::before,
+    .divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .divider span {
+      font-size: 10.5px;
+      letter-spacing: 0.14em;
+      font-weight: 500;
+      text-transform: uppercase;
+      color: var(--text-mute);
+    }
+
+    /* Features list */
+    .features {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .feature {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13.5px;
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .feature-icon {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      margin-top: 1px;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-strong);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+    }
+    .feature-icon svg {
+      width: 10px;
+      height: 10px;
+    }
+
+    /* Footer text */
+    .footnote {
+      margin-top: 56px;
+      text-align: center;
+      color: var(--text-mute);
+      font-size: 13.5px;
+      letter-spacing: -0.003em;
+    }
+    .footnote strong {
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 960px) {
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        margin-top: 56px;
+      }
+      .page { padding: 64px 20px 72px; }
+      .card { padding: 28px 24px 24px; }
+      h1 { font-size: clamp(36px, 9vw, 44px); }
+      .price-row { min-height: auto; }
+      .description { min-height: auto; }
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition: none !important;
+        animation: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="header">
+      <span class="badge">Pricing</span>
+      <h1>Plans and Pricing</h1>
+      <p class="subtitle">
+        Choose a plan that scales with you. Transparent pricing, no hidden fees,
+        cancel or upgrade at any time.
+      </p>
+
+      <div class="toggle" data-billing="monthly" role="tablist" aria-label="Billing period">
+        <span class="pill" aria-hidden="true"></span>
+        <button type="button" class="active" data-billing-option="monthly" role="tab" aria-selected="true">Bill Monthly</button>
+        <button type="button" data-billing-option="annual" role="tab" aria-selected="false">
+          Bill Annually <span class="save-tag">-20%</span>
+        </button>
+      </div>
+    </header>
+
+    <section class="grid" aria-label="Pricing tiers">
+
+      <!-- FREE -->
+      <article class="card card--free">
+        <div class="card-top">
+          <span class="tier-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v10l9 5 9-5V7z"/></svg>
+          </span>
+        </div>
+
+        <h2 class="plan-name">Free Plan</h2>
+        <div class="price-row">
+          <span class="price" data-price-monthly="$0" data-price-annual="$0">$0</span>
+          <span class="price-period">/ month</span>
+        </div>
+        <p class="description">
+          Everything you need to get started — built for solo makers trying things out.
+        </p>
+
+        <button class="cta" type="button">
+          Start for Free
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </button>
+
+        <div class="divider"><span>Stand out features</span></div>
+
+        <ul class="features">
+          <li class="feature">
+            <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            Up to 3 projects
+          </li>
+          <li class="feature">
+            <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            1 GB cloud storage
+          </li>
+          <li class="feature">
+            <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            Community support
+          </li>
+          <li class="feature">
+            <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            Basic analytics dashboard
+          </li>
+          <li class="feature">
+            <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            Export to CSV / JSON
+          </li>
+          <li class="feature">
+            <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            Single-user workspace
+          </li>
+        </ul>
+      </article>
+
+      <!-- PRO -->
+      <article class="card card--pro">
+        <div class="card-top">
+          <span class="tier-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 3 7 7 .5-5.5 4.5 2 7-6.5-4-6.5 4 2-7L2 9.5 9 9z"/></svg>
+          </span>
+          <span class="popular">Popular</span>
+        </div>
+
+        <h2 class="plan-name">Pro Plan</h2>
+        <div class="price-row">
+          <span class="price" data-price-monthly="$80" data-price-annual="$64">$80</span>
+          <span class="price-period">/ month</span>
+        </div>
+        <p class="description">
+          For growing teams that need power tools, real integrations, and priority support.
+        </p>
+
+        <button class="cta cta--primary" type="button">
+          Start Free 7 Days Trial
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </button>
+
+        <div class="divider"><span>Stand out features</span></div>
+
+        <ul class="features">
+          <li class="feature">
+            <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            Unlimited projects &amp; seats
+          </li>
+          <li class="feature">
+            <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            100 GB cloud storage
+          </li>
+          <li class="feature">
+            <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            Advanced analytics &amp; reporting
+          </li>
+          <li class="feature">
+            <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            Slack, Notion &amp; Linear integrations
+          </li>
+          <li class="feature">
+            <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            Priority email &amp; chat support
+          </li>
+          <li class="feature">
+            <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            Custom roles &amp; permissions
+          </li>
+        </ul>
+      </article>
+
+      <!-- ADVANCE -->
+      <article class="card card--advance">
+        <div class="card-top">
+          <span class="tier-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="M12 18v4"/><path d="m4.9 4.9 2.8 2.8"/><path d="m16.2 16.2 2.9 2.9"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="m4.9 19.1 2.8-2.8"/><path d="m16.2 7.8 2.9-2.9"/></svg>
+          </span>
+        </div>
+
+        <h2 class="plan-name">Advance Plan</h2>
+        <div class="price-row">
+          <span class="price-custom">Custom</span>
+          <span class="price-period">pricing</span>
+        </div>
+        <p class="description">
+          Enterprise-grade infrastructure, SSO, and a dedicated success partner for your team.
+        </p>
+
+        <button class="cta" type="button">
+          Contact Us
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </button>
+
+        <div class="divider"><span>Stand out features</span></div>
+
+        <ul class="features">
+          <li class="feature">
+            <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            Everything in Pro, plus:
+          </li>
+          <li class="feature">
+            <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            SSO / SAML &amp; SCIM provisioning
+          </li>
+          <li class="feature">
+            <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            Dedicated customer success manager
+          </li>
+          <li class="feature">
+            <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            Custom SLAs &amp; uptime guarantees
+          </li>
+          <li class="feature">
+            <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            Audit logs &amp; compliance reports
+          </li>
+          <li class="feature">
+            <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            On-premise &amp; private cloud options
+          </li>
+        </ul>
+      </article>
+
+    </section>
+
+    <p class="footnote">
+      Start your journey risk free — <strong>No credit card needed.</strong>
+    </p>
+  </main>
+
+  <script>
+    // Billing toggle — swaps prices and moves the active pill
+    (function () {
+      const toggle = document.querySelector('.toggle');
+      const buttons = toggle.querySelectorAll('button[data-billing-option]');
+      const prices = document.querySelectorAll('.price[data-price-monthly]');
+
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const mode = btn.dataset.billingOption;
+          if (toggle.dataset.billing === mode) return;
+
+          toggle.dataset.billing = mode;
+          buttons.forEach((b) => {
+            const active = b === btn;
+            b.classList.toggle('active', active);
+            b.setAttribute('aria-selected', active ? 'true' : 'false');
+          });
+
+          prices.forEach((p) => {
+            p.textContent = mode === 'annual' ? p.dataset.priceAnnual : p.dataset.priceMonthly;
+          });
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
